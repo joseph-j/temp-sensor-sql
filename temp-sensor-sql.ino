@@ -3,7 +3,7 @@
 
     Questions contact ryan.j.rivard@gmail.com
 
-    Maintained by Joe Jalbert!
+    Maintained by Joe Jalbert
 */
 
 /*
@@ -19,24 +19,25 @@
 
 */
 
+
 // Libraries to include
-#include <Wire.h>
-#include <SD.h>
-#include <SPI.h>
-#include <Ethernet.h>
-#include <IPAddress.h>
-#include <utility/w5100.h>
-#include <EthernetUdp.h>
-#include "libraries/RTClib/src/RTClib.h"
+ #include <Wire.h>
+ #include <SD.h>
+ #include <SPI.h>
+ #include <Ethernet.h>
+ #include <IPAddress.h>
+ #include <utility/w5100.h>
+ #include <EthernetUdp.h>
+// #include "libraries/RTClib/src/RTClib.h"
 
 
 // Custom Libraries
-#include <DS0023PressureSensor.h>
-#include <OctoKTypeBreakout.h>
-#include <SFM3000.h>
+// #include <DS0023PressureSensor.h>
+// #include <OctoKTypeBreakout.h>
+// #include <SFM3000.h>
 
 // Toggle for debug serial outputs
-#define DEBUG
+#define DEBUG 1
 
 // Sampling Rate Control
 const uint16_t SAMPLE_RATE = 60000; // Will need to be decreased to achieve actual desired delay, does not account for processing time of functions
@@ -59,11 +60,11 @@ const uint8_t SPI_PIN_2 = 52;    // Ethernet Shield default
 const uint8_t SPI_PIN_3 = 53;    // Ethernet Shield default
 
 // Sensor instantiation
-DS0023PressureSensor dp1(0, 5, "DP0");
-DS0023PressureSensor dp2(2, 5, "DP1");
-OctoKTypeBreakout tcHub(43,45,47,10,48,46,49);
-SHTSensor sht(SHTSensor::SHT4X);
-SFM3000 mfs1(9, 10, 32000, 140.0);
+// DS0023PressureSensor dp1(0, 5, "DP0");
+// DS0023PressureSensor dp2(2, 5, "DP1");
+// OctoKTypeBreakout tcHub(43,45,47,10,48,46,49);
+// SHTSensor sht(SHTSensor::SHT4X);
+// SFM3000 mfs1(9, 10, 32000, 140.0);
 
 // Logging and Ethernet Connectivity Variables
 File logfile;
@@ -79,27 +80,28 @@ boolean startup = true;
 
 void setup()
 {
+
   SPI.begin();
   Serial.begin(9600);
   Wire.begin();
   delay(1000);
   Serial.println("Serial Init");
 
-  tcHub.init();
-  Serial.println("TC Hub Init");
+  // tcHub.init();
+  // Serial.println("TC Hub Init");
 
-  mfs1.init();
-  Serial.println("MFS Init");
+  // mfs1.init();
+  // Serial.println("MFS Init");
 
-  dp1.init();
-  dp2.init();
-  Serial.println("DP Init");
+  // dp1.init();
+  // dp2.init();
+  // Serial.println("DP Init");
 
-  SLF3X.init();
-  Serial.println("SLF3X Init");
+  // SLF3X.init();
+  // Serial.println("SLF3X Init");
 
-  sht.init();
-  Serial.println("SHT Init");
+  // sht.init();
+  // Serial.println("SHT Init");
 
   // SD INIT 
   pinMode(SS_SD_PIN, OUTPUT);
@@ -122,35 +124,35 @@ void setup()
   logfile.print(", ");
   logfile.print("Time");
   logfile.print(", ");
-  logfile.print("Cartridge Serial");
-  logfile.print(",");
+  // logfile.print("Cartridge Serial");
+  // logfile.print(",");
   logfile.print("TC0");
-  logfile.print(",");
-  logfile.print("TC1");
-  logfile.print(",");
-  logfile.print("TC2");
-  logfile.print(",");
-  logfile.print("TC3");
-  logfile.print(",");
-  logfile.print("TC4");
-  logfile.print(",");
-  logfile.print("TC5");
-  logfile.print(",");
-  logfile.print("TC6");
-  logfile.print(",");
-  logfile.print("TC7");
-  logfile.print(",");
-  logfile.print("DP0");
-  logfile.print(",");
-  logfile.print("DP1");
-  logfile.print(",");
-  logfile.print("Liquid Flow");
-  logfile.print(",");
-  logfile.print("MFS");
-  logfile.print(",");
-  logfile.print("RH %");
-  logfile.print(",");
-  logfile.print("Temp");
+  // logfile.print(",");
+  // logfile.print("TC1");
+  // logfile.print(",");
+  // logfile.print("TC2");
+  // logfile.print(",");
+  // logfile.print("TC3");
+  // logfile.print(",");
+  // logfile.print("TC4");
+  // logfile.print(",");
+  // logfile.print("TC5");
+  // logfile.print(",");
+  // logfile.print("TC6");
+  // logfile.print(",");
+  // logfile.print("TC7");
+  // logfile.print(",");
+  // logfile.print("DP0");
+  // logfile.print(",");
+  // logfile.print("DP1");
+  // logfile.print(",");
+  // logfile.print("Liquid Flow");
+  // logfile.print(",");
+  // logfile.print("MFS");
+  // logfile.print(",");
+  // logfile.print("RH %");
+  // logfile.print(",");
+  // logfile.print("Temp");
   logfile.print("\n");
 
   digitalWrite(SS_SD_PIN, HIGH); // Close communication with SD on SPI bus
@@ -167,7 +169,7 @@ void setup()
   Serial.println("MAC Init");
   delay(1000);
 
-  Udp.begin(localPort); // Establish UDP connection to enable timestamp pulling from internet
+  //Udp.begin(localPort); // Establish UDP connection to enable timestamp pulling from internet
 
   #ifdef DEBUG
     Serial.println("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
@@ -185,15 +187,16 @@ void setup()
 
 void loop()
 {
+
   // Prompts the user for the cartridge serial on startup and 
-  if (startup == true){
-    Serial.println("Enter Cartridge Serial: ");
-    while(Serial.available() == 0) {} // Wait until serial is available
-    cartridgeSerial = Serial.readStringUntil('\n');
-    startup = false;
-    Serial.print("Serial Entered: ");
-    Serial.println(cartridgeSerial);
-  }
+  // if (startup == true){
+  //   Serial.println("Enter Cartridge Serial: ");
+  //   while(Serial.available() == 0) {} // Wait until serial is available
+  //   cartridgeSerial = Serial.readStringUntil('\n');
+  //   startup = false;
+  //   Serial.print("Serial Entered: ");
+  //   Serial.println(cartridgeSerial);
+  // }
 
   uint32_t epoch = pullNTP(); // Update epoch timestamp from time.nist.gov
   #ifdef DEBUG
@@ -204,12 +207,13 @@ void loop()
   //DateTime timestamp = new DateTime((uint32_t)epoch);
   EDT_epoch = pullNTP();
 
-  tcHub.update();
-  dp1.update();
-  dp2.update();
-  sht.heatAndRead(); // activate heater with 200mW for 1s, including a high precision measurement just before deactivation
-  mfs1.update();
+  // tcHub.update();
+  // dp1.update();
+  // dp2.update();
+  // sht.heatAndRead(); // activate heater with 200mW for 1s, including a high precision measurement just before deactivation
+  // mfs1.update();
   // SLF3X Sensor is constantly sampling and returns running average when requested
+  tc_update();
   pushData(EDT_epoch);
   
   Ethernet.maintain(); // Must be periodically called to maintain connction to Apache Server
@@ -232,17 +236,17 @@ void pushData(uint32_t  timestamp) {
     client.print("Serial=");
     client.print(cartridgeSerial);
     client.print("&&");
-    tcHub.pushData(client);
-    client.print("&&");
-    dp1.pushData(client);
-    client.print("&&");
-    dp2.pushData(client);
-    client.print("&&");
-    SLF3X.pushData(client);
-    client.print("&&");
-    mfs1.pushData(client);
-    client.print("&&");
-    sht.pushData(client);
+    //tcHub.pushData(client);
+    // client.print("&&");
+    // dp1.pushData(client);
+    // client.print("&&");
+    // dp2.pushData(client);
+    // client.print("&&");
+    // SLF3X.pushData(client);
+    // client.print("&&");
+    // mfs1.pushData(client);
+    // client.print("&&");
+    // sht.pushData(client);
     client.println(" HTTP/1.1");
     client.print("Host: ");
     client.println(server);
@@ -278,22 +282,22 @@ void pushData(uint32_t  timestamp) {
     logfile.print(",");
     logfile.print(cartridgeSerial);
     logfile.print(",");
-    for (uint8_t i = 0; i < 8; i++)
-    {
-        logfile.print(tcHub.getAvgReading(i));
-        logfile.print(",");
-    }
-    logfile.print(dp1.getAverageReading());
-    logfile.print(",");
-    logfile.print(dp2.getAverageReading());
-    logfile.print(",");
-    logfile.print(SLF3X.getFlow());
-    logfile.print(",");
-    logfile.print(mfs1.getAverageReading());
-    logfile.print(",");
-    logfile.print(sht.getHumidity());
-    logfile.print(",");
-    logfile.print(sht.getTemperature());
+    // for (uint8_t i = 0; i < 8; i++)
+    // {
+    //     logfile.print(tcHub.getAvgReading(i));
+    //     logfile.print(",");
+    // }
+    // logfile.print(dp1.getAverageReading());
+    // logfile.print(",");
+    // logfile.print(dp2.getAverageReading());
+    // logfile.print(",");
+    // logfile.print(SLF3X.getFlow());
+    // logfile.print(",");
+    // logfile.print(mfs1.getAverageReading());
+    // logfile.print(",");
+    // logfile.print(sht.getHumidity());
+    // logfile.print(",");
+    // logfile.print(sht.getTemperature());
     logfile.print('\n');
 
     logfile.flush();
