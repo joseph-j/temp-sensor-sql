@@ -1,4 +1,6 @@
 
+
+
 /* Written by Ryan Rivard 4/27/22
     for arduino Mega
 
@@ -29,7 +31,8 @@
  #include <IPAddress.h>
  #include <utility/w5100.h>
  #include <EthernetUdp.h>
- #include "MAX31855.h" 
+ #include <Adafruit_MAX31856.h>
+
 
 
 // Toggle for debug serial outputs
@@ -74,17 +77,19 @@ void setup()
   SPI.begin();
   Serial.begin(9600);
   Wire.begin();
-  delay(1000);
+  delay(300);
   Serial.println("Serial Init");
 
-  //tc_init();
-  //Serial.println("TC Init");
-  //delay(1000);
+  tc_init();
+  Serial.println("TC Init");
+  delay(300);
 
   // SD INIT 
   pinMode(SS_SD_PIN, OUTPUT);
   digitalWrite(SS_SD_PIN, LOW); // Open SD communication on SPI bus
   SD.begin(SS_SD_PIN);
+  Serial.println("TC Init");
+  delay(300);
 
   char filename[] = "LOGGER00.CSV";
   for (uint8_t i = 0; i < 100; i++) {
@@ -222,24 +227,7 @@ void pushData(uint32_t  timestamp) {
     logfile.print(",");
     logfile.print(epochToTime(EDT_epoch));
     logfile.print(",");
-    logfile.print(cartridgeSerial);
-    logfile.print(",");
-    // for (uint8_t i = 0; i < 8; i++)
-    // {
-    //     logfile.print(tcHub.getAvgReading(i));
-    //     logfile.print(",");
-    // }
-    // logfile.print(dp1.getAverageReading());
-    // logfile.print(",");
-    // logfile.print(dp2.getAverageReading());
-    // logfile.print(",");
-    // logfile.print(SLF3X.getFlow());
-    // logfile.print(",");
-    // logfile.print(mfs1.getAverageReading());
-    // logfile.print(",");
-    // logfile.print(sht.getHumidity());
-    // logfile.print(",");
-    // logfile.print(sht.getTemperature());
+    logfile.print(count);
     logfile.print('\n');
 
     logfile.flush();
@@ -300,6 +288,9 @@ uint32_t pullNTP() {
   delay(1000);
   if (Udp.parsePacket()) {
     // We've received a packet, read the data from it
+    #ifdef DEBUG
+      Serial.println("Packets!");
+    #endif
     Udp.read(packetBuffer, NTP_PACKET_SIZE); // read the packet into the buffer
 
     // the timestamp starts at byte 40 of the received packet and is four bytes,
