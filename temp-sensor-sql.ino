@@ -1,3 +1,4 @@
+
 /* Written by Ryan Rivard 4/27/22
     for arduino Mega
 
@@ -40,7 +41,7 @@
 #define DEBUG 1
 
 // Sampling Rate Control
-const uint16_t SAMPLE_RATE = 60000; // Will need to be decreased to achieve actual desired delay, does not account for processing time of functions
+const uint16_t SAMPLE_RATE = 10000; // Will need to be decreased to achieve actual desired delay, does not account for processing time of function
 
 // Ethernet Network Time Protocol
 // - Provides timestamps synced to the time.nist.gov server
@@ -50,7 +51,8 @@ const int NTP_PACKET_SIZE = 48; // NTP time stamp is in the first 48 bytes of th
 byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
 unsigned long EDT_epoch = 0;
 EthernetUDP Udp; // A UDP instance to let us send and receive packets over UDP
- 
+byte count = 0;
+
 // Pin definitions
 const uint8_t SS_SD_PIN = 4;     // Ethernet Sheild default
 const uint8_t SS_W5500_PIN = 10; // Ethernet Shiled default
@@ -69,13 +71,13 @@ const uint8_t SPI_PIN_3 = 53;    // Ethernet Shield default
 // Logging and Ethernet Connectivity Variables
 File logfile;
 EthernetClient client;
-char server[] = "192.168.100.206"; // IP address of the Fikst Apache server on F54
-byte server1[] = { 192, 168, 100, 206 }; // IP address of the Fikst Apache server on F54
+char server[] = "192.168.0.112"; // IP address of the Fikst Apache server on F54
+byte server1[] = { 192, 168, 0, 112 }; // IP address of the Fikst Apache server on F54
 byte mac[] = {0xA8, 0x61, 0x0A, 0xAE, 0x88, 0x6C}; // Provided MAC address of Ethernet Shield
-IPAddress ip1(192,168,100,209); // If UDP failes to assign an IP address to the ethernet shield, instead default to this IP
+IPAddress ip1(192,168,0,181); // If UDP failes to assign an IP address to the ethernet shield, instead default to this IP
 
 // State Variables
-String cartridgeSerial = "NOT ENTERED";
+String cartridgeSerial = "null";
 boolean startup = true;
 
 void setup()
@@ -87,8 +89,9 @@ void setup()
   delay(1000);
   Serial.println("Serial Init");
 
-  // tcHub.init();
-  // Serial.println("TC Hub Init");
+  tc_init();
+  Serial.println("TC Init");
+  delay(1000);
 
   // mfs1.init();
   // Serial.println("MFS Init");
@@ -124,35 +127,7 @@ void setup()
   logfile.print(", ");
   logfile.print("Time");
   logfile.print(", ");
-  // logfile.print("Cartridge Serial");
-  // logfile.print(",");
   logfile.print("TC0");
-  // logfile.print(",");
-  // logfile.print("TC1");
-  // logfile.print(",");
-  // logfile.print("TC2");
-  // logfile.print(",");
-  // logfile.print("TC3");
-  // logfile.print(",");
-  // logfile.print("TC4");
-  // logfile.print(",");
-  // logfile.print("TC5");
-  // logfile.print(",");
-  // logfile.print("TC6");
-  // logfile.print(",");
-  // logfile.print("TC7");
-  // logfile.print(",");
-  // logfile.print("DP0");
-  // logfile.print(",");
-  // logfile.print("DP1");
-  // logfile.print(",");
-  // logfile.print("Liquid Flow");
-  // logfile.print(",");
-  // logfile.print("MFS");
-  // logfile.print(",");
-  // logfile.print("RH %");
-  // logfile.print(",");
-  // logfile.print("Temp");
   logfile.print("\n");
 
   digitalWrite(SS_SD_PIN, HIGH); // Close communication with SD on SPI bus
@@ -169,7 +144,7 @@ void setup()
   Serial.println("MAC Init");
   delay(1000);
 
-  //Udp.begin(localPort); // Establish UDP connection to enable timestamp pulling from internet
+  Udp.begin(localPort); // Establish UDP connection to enable timestamp pulling from internet
 
   #ifdef DEBUG
     Serial.println("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
@@ -187,17 +162,9 @@ void setup()
 
 void loop()
 {
-
-  // Prompts the user for the cartridge serial on startup and 
-  // if (startup == true){
-  //   Serial.println("Enter Cartridge Serial: ");
-  //   while(Serial.available() == 0) {} // Wait until serial is available
-  //   cartridgeSerial = Serial.readStringUntil('\n');
-  //   startup = false;
-  //   Serial.print("Serial Entered: ");
-  //   Serial.println(cartridgeSerial);
-  // }
-
+  Serial.print("looping...");
+  Serial.println(count);
+  count++;
   uint32_t epoch = pullNTP(); // Update epoch timestamp from time.nist.gov
   #ifdef DEBUG
     Serial.println("Epoch from NTP: ");
