@@ -29,13 +29,8 @@
  #include <IPAddress.h>
  #include <utility/w5100.h>
  #include <EthernetUdp.h>
-// #include "libraries/RTClib/src/RTClib.h"
+ #include "MAX31855.h" 
 
-
-// Custom Libraries
-// #include <DS0023PressureSensor.h>
-// #include <OctoKTypeBreakout.h>
-// #include <SFM3000.h>
 
 // Toggle for debug serial outputs
 #define DEBUG 1
@@ -61,13 +56,6 @@ const uint8_t SPI_PIN_1 = 51;    // Ethernet Shield default
 const uint8_t SPI_PIN_2 = 52;    // Ethernet Shield default
 const uint8_t SPI_PIN_3 = 53;    // Ethernet Shield default
 
-// Sensor instantiation
-// DS0023PressureSensor dp1(0, 5, "DP0");
-// DS0023PressureSensor dp2(2, 5, "DP1");
-// OctoKTypeBreakout tcHub(43,45,47,10,48,46,49);
-// SHTSensor sht(SHTSensor::SHT4X);
-// SFM3000 mfs1(9, 10, 32000, 140.0);
-
 // Logging and Ethernet Connectivity Variables
 File logfile;
 EthernetClient client;
@@ -89,22 +77,9 @@ void setup()
   delay(1000);
   Serial.println("Serial Init");
 
-  tc_init();
-  Serial.println("TC Init");
-  delay(1000);
-
-  // mfs1.init();
-  // Serial.println("MFS Init");
-
-  // dp1.init();
-  // dp2.init();
-  // Serial.println("DP Init");
-
-  // SLF3X.init();
-  // Serial.println("SLF3X Init");
-
-  // sht.init();
-  // Serial.println("SHT Init");
+  //tc_init();
+  //Serial.println("TC Init");
+  //delay(1000);
 
   // SD INIT 
   pinMode(SS_SD_PIN, OUTPUT);
