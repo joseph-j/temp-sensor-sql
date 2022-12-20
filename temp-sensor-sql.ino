@@ -109,8 +109,11 @@ void setup()
   logfile.print(", ");
   logfile.print("TC0");
   logfile.print("\n");
+  
   #ifdef DEBUG
     Serial.println("logfile Headers");
+  #endif
+
   digitalWrite(SS_SD_PIN, HIGH); // Close communication with SD on SPI bus
 
   pinMode(SS_W5500_PIN, OUTPUT);
