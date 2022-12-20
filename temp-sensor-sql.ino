@@ -78,7 +78,7 @@ void setup()
   Serial.begin(9600);
   Wire.begin();
   delay(300);
-  Serial.println("Serial Init");
+  Serial.println("Serial Init1");
 
   tc_init();
   Serial.println("TC Init");
@@ -88,7 +88,7 @@ void setup()
   pinMode(SS_SD_PIN, OUTPUT);
   digitalWrite(SS_SD_PIN, LOW); // Open SD communication on SPI bus
   SD.begin(SS_SD_PIN);
-  Serial.println("TC Init");
+  Serial.println("SD Init");
   delay(300);
 
   char filename[] = "LOGGER00.CSV";
@@ -109,7 +109,8 @@ void setup()
   logfile.print(", ");
   logfile.print("TC0");
   logfile.print("\n");
-
+  #ifdef DEBUG
+    Serial.println("logfile Headers");
   digitalWrite(SS_SD_PIN, HIGH); // Close communication with SD on SPI bus
 
   pinMode(SS_W5500_PIN, OUTPUT);
