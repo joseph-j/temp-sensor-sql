@@ -85,6 +85,8 @@ void setup()
   delay(300);
 
   // SD INIT 
+  pinMode(SS_W5500_PIN, OUTPUT);
+  digitalWrite(SS_W5500_PIN, HIGH); // Close Ethernet communication on SPI bus
   pinMode(SS_SD_PIN, OUTPUT);
   digitalWrite(SS_SD_PIN, LOW); // Open SD communication on SPI bus
   SD.begin(SS_SD_PIN);
@@ -116,7 +118,6 @@ void setup()
 
   digitalWrite(SS_SD_PIN, HIGH); // Close communication with SD on SPI bus
 
-  pinMode(SS_W5500_PIN, OUTPUT);
   digitalWrite(SS_W5500_PIN, LOW); // Open communication with Ethernet chip
   Ethernet.init(SS_W5500_PIN); 
   delay(5000);
