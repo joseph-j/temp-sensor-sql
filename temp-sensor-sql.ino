@@ -86,9 +86,13 @@ void setup()
 
   // SD INIT 
   pinMode(SS_W5500_PIN, OUTPUT);
+  Serial.println("pinMode(SS_W5500_PIN, OUTPUT);");
   digitalWrite(SS_W5500_PIN, HIGH); // Close Ethernet communication on SPI bus
+  Serial.println("digitalWrite(SS_W5500_PIN, HIGH);");
   pinMode(SS_SD_PIN, OUTPUT);
+  Serial.println("pinMode(SS_SD_PIN, OUTPUT);");
   digitalWrite(SS_SD_PIN, LOW); // Open SD communication on SPI bus
+  Serial.println("digitalWrite(SS_SD_PIN, LOW);");
   SD.begin(SS_SD_PIN);
   Serial.println("SD Init");
   delay(300);
