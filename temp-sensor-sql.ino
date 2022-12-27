@@ -40,25 +40,26 @@
 
 // Sampling Rate Control
 const uint16_t SAMPLE_RATE = 10000; // Will need to be decreased to achieve actual desired delay, does not account for processing time of function
-
+//
 // Ethernet Network Time Protocol
 // - Provides timestamps synced to the time.nist.gov server
-unsigned int localPort = 8888;       // local port to listen for UDP packets
+const uint16_t localPort = 8888;       // local port to listen for UDP packets
 const char timeServer[] = "time.nist.gov"; // time.nist.gov NTP server
-const int NTP_PACKET_SIZE = 48; // NTP time stamp is in the first 48 bytes of the message
+const byte NTP_PACKET_SIZE = 48; // NTP time stamp is in the first 48 bytes of the message
 byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
-unsigned long EDT_epoch = 0;
+unsigned int EDT_epoch = 0;
 EthernetUDP Udp; // A UDP instance to let us send and receive packets over UDP
 byte count = 0;
 
 // Pin definitions
 const uint8_t SS_SD_PIN = 4;     // Ethernet Sheild default
 const uint8_t SS_W5500_PIN = 10; // Ethernet Shiled default
+/*
 const uint8_t SPI_PIN_SS = 50;   // Ethernet Shield default
 const uint8_t SPI_PIN_1 = 51;    // Ethernet Shield default
 const uint8_t SPI_PIN_2 = 52;    // Ethernet Shield default
 const uint8_t SPI_PIN_3 = 53;    // Ethernet Shield default
-
+*/
 // Logging and Ethernet Connectivity Variables
 File logfile;
 EthernetClient client;
@@ -86,13 +87,9 @@ void setup()
 
   // SD INIT 
   pinMode(SS_W5500_PIN, OUTPUT);
-  Serial.println("pinMode(SS_W5500_PIN, OUTPUT);");
   digitalWrite(SS_W5500_PIN, HIGH); // Close Ethernet communication on SPI bus
-  Serial.println("digitalWrite(SS_W5500_PIN, HIGH);");
   pinMode(SS_SD_PIN, OUTPUT);
-  Serial.println("pinMode(SS_SD_PIN, OUTPUT);");
   digitalWrite(SS_SD_PIN, LOW); // Open SD communication on SPI bus
-  Serial.println("digitalWrite(SS_SD_PIN, LOW);");
   SD.begin(SS_SD_PIN);
   Serial.println("SD Init");
   delay(300);
@@ -157,7 +154,9 @@ void loop()
   uint32_t epoch = pullNTP(); // Update epoch timestamp from time.nist.gov
   #ifdef DEBUG
     Serial.println("Epoch from NTP: ");
-    Serial.println(epoch);
+    Serial.print(epochToDate(epoch));
+    Serial.print(" -- ");
+    Serial.println(epochToTime(epoch));
   #endif
 
   //DateTime timestamp = new DateTime((uint32_t)epoch);
@@ -192,17 +191,6 @@ void pushData(uint32_t  timestamp) {
     client.print("Serial=");
     client.print(cartridgeSerial);
     client.print("&&");
-    //tcHub.pushData(client);
-    // client.print("&&");
-    // dp1.pushData(client);
-    // client.print("&&");
-    // dp2.pushData(client);
-    // client.print("&&");
-    // SLF3X.pushData(client);
-    // client.print("&&");
-    // mfs1.pushData(client);
-    // client.print("&&");
-    // sht.pushData(client);
     client.println(" HTTP/1.1");
     client.print("Host: ");
     client.println(server);
