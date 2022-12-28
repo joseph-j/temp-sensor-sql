@@ -65,6 +65,7 @@ File logfile;
 EthernetClient client;
 char server[] = "192.168.0.112"; // IP address of the SQL server on RPi
 byte server1[] = { 192, 168, 0, 112 }; // IP address of the SQL server on RPi
+IPAddress server2(192,168,0,112);
 byte mac[] = {0xA8, 0x61, 0x0A, 0xAE, 0x88, 0x6C}; // Provided MAC address of Ethernet Shield
 IPAddress ip1(192,168,0,181); // If UDP failes to assign an IP address to the ethernet shield, instead default to this IP
 
@@ -177,7 +178,7 @@ void pushData(uint32_t  timestamp) {
     ShowSockStatus();
   #endif
 
-  if (client.connect(server1, 80) == 1)
+  if (client.connect(server2, 80) == 1)
   { 
     digitalWrite(SS_W5500_PIN, LOW); // Open communication with ethernet chip
     Serial.println("-> Connected");
