@@ -54,17 +54,17 @@ byte count = 0;
 // Pin definitions
 const uint8_t SS_SD_PIN = 4;     // Ethernet Sheild default
 const uint8_t SS_W5500_PIN = 10; // Ethernet Shiled default
-/*
+
 const uint8_t SPI_PIN_SS = 50;   // Ethernet Shield default
 const uint8_t SPI_PIN_1 = 51;    // Ethernet Shield default
 const uint8_t SPI_PIN_2 = 52;    // Ethernet Shield default
 const uint8_t SPI_PIN_3 = 53;    // Ethernet Shield default
-*/
+
 // Logging and Ethernet Connectivity Variables
 File logfile;
 EthernetClient client;
-char server[] = "192.168.0.112"; // IP address of the Fikst Apache server on F54
-byte server1[] = { 192, 168, 0, 112 }; // IP address of the Fikst Apache server on F54
+char server[] = "192.168.0.112"; // IP address of the SQL server on RPi
+byte server1[] = { 192, 168, 0, 112 }; // IP address of the SQL server on RPi
 byte mac[] = {0xA8, 0x61, 0x0A, 0xAE, 0x88, 0x6C}; // Provided MAC address of Ethernet Shield
 IPAddress ip1(192,168,0,181); // If UDP failes to assign an IP address to the ethernet shield, instead default to this IP
 
@@ -127,7 +127,7 @@ void setup()
     // try to congifure using IP address instead of DHCP:
     Ethernet.begin(mac, ip1);
   }
-  Serial.println("MAC Init");
+  Serial.println("Ethernet Init");
   delay(1000);
 
   Udp.begin(localPort); // Establish UDP connection to enable timestamp pulling from internet
@@ -152,22 +152,18 @@ void loop()
   Serial.println(count);
   count++;
   uint32_t epoch = pullNTP(); // Update epoch timestamp from time.nist.gov
-  #ifdef DEBUG
-    Serial.println("Epoch from NTP: ");
-    Serial.print(epochToDate(epoch));
-    Serial.print(" -- ");
-    Serial.println(epochToTime(epoch));
-  #endif
+  
 
   //DateTime timestamp = new DateTime((uint32_t)epoch);
   EDT_epoch = pullNTP();
 
-  // tcHub.update();
-  // dp1.update();
-  // dp2.update();
-  // sht.heatAndRead(); // activate heater with 200mW for 1s, including a high precision measurement just before deactivation
-  // mfs1.update();
-  // SLF3X Sensor is constantly sampling and returns running average when requested
+  #ifdef DEBUG
+    Serial.println("Epoch from NTP: ");
+    Serial.println(EDT_epoch);
+    Serial.print(epochToDate(EDT_epoch));
+    Serial.print(" -- ");
+    Serial.println(epochToTime(EDT_epoch));
+  #endif
   tc_update();
   pushData(EDT_epoch);
   
@@ -187,7 +183,7 @@ void pushData(uint32_t  timestamp) {
     Serial.println("-> Connected");
     // Make a HTTP request:
     // http://http://192.168.100.206//testserver/arduino_temperatures/add_data.php?serial=288884820500006X&temperature=12.3
-    client.print("GET /add_data_cartridge_rig.php?");
+    client.print("GET /add_data.php?");
     client.print("Serial=");
     client.print(cartridgeSerial);
     client.print("&&");
@@ -236,6 +232,14 @@ void pushData(uint32_t  timestamp) {
 // TODO: Finish Epoch Conversion to datestamp
 String epochToDate(uint32_t timestamp) {
   char created_date[] = "00/00/00";
+  created_date[0] = (char)(((EDT_epoch  % 86400) / 60) / 10) + '0';
+  created_date[1] = (char)(((EDT_epoch  % 86400) / 60) + '0';
+  created_date[2] = "/";
+  created_date[3] = (char)(((EDT_epoch  % 86400) + '0';
+  created_date[4] = (char)(((EDT_epoch  % 86400) % 10) + '0';
+  created_date[5] = "/";
+  created_date[6] = (char)((EDT_epoch % 31556926) / 10) + '0';
+  created_date[7] = (char)((EDT_epoch % 31556926) % 10) + '0';
   return created_date;
 }
 
@@ -243,10 +247,10 @@ String epochToTime(uint32_t  timestamp) {
   char created_time[] = "00:00:00";
   created_time[0] = (char)(((EDT_epoch  % 86400L) / 3600) / 10) + '0';
   created_time[1] = (char)(((EDT_epoch  % 86400L) / 3600)) + '0';
-  created_time[2] = ":";
+  created_time[2] = "-";
   created_time[3] = (char)(((EDT_epoch  % 3600) / 60) / 10) + '0';
   created_time[4] = (char)(((EDT_epoch  % 3600) / 60) % 10) + '0';
-  created_time[5] = ":";
+  created_time[5] = "-";
   created_time[6] = (char)((EDT_epoch % 60) / 10) + '0';
   created_time[7] = (char)((EDT_epoch % 60) % 10) + '0';
   return created_time;
