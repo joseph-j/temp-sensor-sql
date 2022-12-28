@@ -233,10 +233,10 @@ void pushData(uint32_t  timestamp) {
 String epochToDate(uint32_t timestamp) {
   char created_date[] = "00/00/00";
   created_date[0] = (char)(((EDT_epoch  % 86400) / 60) / 10) + '0';
-  created_date[1] = (char)(((EDT_epoch  % 86400) / 60) + '0';
+  created_date[1] = (char)((EDT_epoch  % 86400) / 60) + '0';
   created_date[2] = "/";
-  created_date[3] = (char)(((EDT_epoch  % 86400) + '0';
-  created_date[4] = (char)(((EDT_epoch  % 86400) % 10) + '0';
+  created_date[3] = (char)(EDT_epoch  % 86400) + '0';
+  created_date[4] = (char)((EDT_epoch  % 86400) % 10) + '0';
   created_date[5] = "/";
   created_date[6] = (char)((EDT_epoch % 31556926) / 10) + '0';
   created_date[7] = (char)((EDT_epoch % 31556926) % 10) + '0';
