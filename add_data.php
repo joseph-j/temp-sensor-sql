@@ -1,3 +1,6 @@
+// connect to Database
+include("dbconnect.php");
+
 // Prepare the SQL statement
 $SQL = "INSERT INTO test.newdata (id ,Temperature ,Humidity) VALUES ('".$_GET["id"]."','".$_GET ["Temperature"]."','".$_GET["Humidity"]."')";   
 //$SQL1 = "INSERT INTO test.room (room) VALUES ('".$_GET["room"]."')";              
