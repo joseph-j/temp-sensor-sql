@@ -1,4 +1,5 @@
 // connect to Database
+<?php
 include("dbconnect.php");
 
 // Prepare the SQL statement
