@@ -39,7 +39,7 @@
 #define DEBUG 1
 
 // Sampling Rate Control
-const uint16_t SAMPLE_RATE = 10000; // Will need to be decreased to achieve actual desired delay, does not account for processing time of function
+const uint16_t SAMPLE_RATE = 600000; // Will need to be decreased to achieve actual desired delay, does not account for processing time of function
 //
 // Ethernet Network Time Protocol
 // - Provides timestamps synced to the time.nist.gov server
