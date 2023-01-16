@@ -190,11 +190,11 @@ void pushData(uint32_t  timestamp) {
     client.print(EDT_epoch);
     client.print("&");
 
-    client.print(" Temperature=");
+    client.print("Temperature=");
     client.print(count);
     client.print("&");
 
-    client.print(" Humidity=");
+    client.print("Humidity=");
     client.print("55%");
     client.print("&");
 
