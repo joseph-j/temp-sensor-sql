@@ -188,15 +188,15 @@ void pushData(uint32_t  timestamp) {
     
     client.print("id=");
     client.print(EDT_epoch);
-    client.print("&&");
+    client.print("&");
 
     client.print(" Temperature=");
     client.print(count);
-    client.print("&&");
+    client.print("&");
 
     client.print(" Humidity=");
     client.print("55%");
-    client.print("&&");
+    client.print("&");
 
     client.println(" HTTP/1.1");
     client.print("Host: ");
