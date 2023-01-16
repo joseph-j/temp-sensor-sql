@@ -184,17 +184,17 @@ void pushData(uint32_t  timestamp) {
     Serial.println("-> Connected");
     // Make a HTTP request:
     // http://http://192.168.100.206//testserver/arduino_temperatures/add_data.php?serial=288884820500006X&temperature=12.3
-    client.print("GET add_data.php?");
+    client.print("GET /updateDB.php?");
     
     client.print("id=");
     client.print(EDT_epoch);
     client.print("&&");
 
-    client.print("Temperature=");
+    client.print(" Temperature=");
     client.print(count);
     client.print("&&");
 
-    client.print("Humidity=");
+    client.print(" Humidity=");
     client.print("55%");
     client.print("&&");
 
