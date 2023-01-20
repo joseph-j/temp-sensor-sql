@@ -24,19 +24,21 @@
 
 
 // Libraries to include
- #include <Wire.h>
- #include <SD.h>
- #include <SPI.h>
- #include <Ethernet.h>
- #include <IPAddress.h>
- #include <utility/w5100.h>
- #include <EthernetUdp.h>
- #include <Adafruit_MAX31856.h>
-
+#include <Wire.h>
+#include <SD.h>
+#include <SPI.h>
+#include <Ethernet.h>
+#include <IPAddress.h>
+#include <utility/w5100.h>
+#include <EthernetUdp.h>
+//#include <Adafruit_MAX31856.h>
+#include <SHTSensor.h>
+#include <arduino-sht.h>
 
 
 // Toggle for debug serial outputs
 #define DEBUG 1
+//#define NETDEBUG
 
 // Sampling Rate Control
 const uint16_t SAMPLE_RATE = 600000; // Will need to be decreased to achieve actual desired delay, does not account for processing time of function
@@ -69,6 +71,11 @@ IPAddress server2(192,168,0,112);
 byte mac[] = {0xA8, 0x61, 0x0A, 0xAE, 0x88, 0x6C}; // Provided MAC address of Ethernet Shield
 IPAddress ip1(192,168,0,181); // If UDP failes to assign an IP address to the ethernet shield, instead default to this IP
 
+//SHT Sensor Variables
+SHTSensor sht;
+uint8_t data[2] = {0};
+const int POWER_PIN = 13;
+
 // State Variables
 String cartridgeSerial = "null";
 boolean startup = true;
@@ -82,8 +89,7 @@ void setup()
   delay(300);
   Serial.println("Serial Init1");
 
-  tc_init();
-  Serial.println("TC Init");
+  sht_init();
   delay(300);
 
   // SD INIT 
@@ -165,23 +171,26 @@ void loop()
     Serial.print(" -- ");
     Serial.println(epochToTime(EDT_epoch));
   #endif
-  tc_update();
+  sht_read();
   pushData(EDT_epoch);
   
   Ethernet.maintain(); // Must be periodically called to maintain connction to Apache Server
-  delay(SAMPLE_RATE);
+  //delay(SAMPLE_RATE);
+  for(int delayCount = 0; delayCount<600; delayCount++){
+    delay(1000);
+  }
 }
 
 void pushData(uint32_t  timestamp) {
   
-  #ifdef DEBUG
+  #ifdef NETDEBUG
     ShowSockStatus();
   #endif
 
   if (client.connect(server1, 80) == 1)
   { 
     digitalWrite(SS_W5500_PIN, LOW); // Open communication with ethernet chip
-    Serial.println("-> Connected");
+    //Serial.println("-> Connected");
     // Make a HTTP request:
     // http://http://192.168.100.206//testserver/arduino_temperatures/add_data.php?serial=288884820500006X&temperature=12.3
     client.print("GET /updateDB.php?");
@@ -191,11 +200,11 @@ void pushData(uint32_t  timestamp) {
     client.print("&");
 
     client.print("Temperature=");
-    client.print(count);
+    client.print(data[0]);
     client.print("&");
 
     client.print("Humidity=");
-    client.print("55%");
+    client.print(data[1]);
     client.print("&");
 
     client.println(" HTTP/1.1");
@@ -206,7 +215,10 @@ void pushData(uint32_t  timestamp) {
     client.println();
     client.stop();
     digitalWrite(SS_W5500_PIN, HIGH); // Close communication with ethernet chip
+    
+    #ifdef DEBUG
     Serial.println("Data pushed to Server");
+    #endif
   }
   else
   {
@@ -216,7 +228,8 @@ void pushData(uint32_t  timestamp) {
 
   // SD Write
   digitalWrite(SS_SD_PIN, LOW); // Open communication SPI bus with SD
-  if (!SD.begin(SS_SD_PIN)) { //ensure SD card is present
+    #ifdef DEBUG
+    if (!SD.begin(SS_SD_PIN)) { //ensure SD card is present
       Serial.println("Card failed, or not present");
     }
     else {
@@ -226,18 +239,20 @@ void pushData(uint32_t  timestamp) {
     if (!logfile) {
       Serial.println("Couldn't create file!");
     }
-
-    logfile.print(epochToDate(EDT_epoch));
+    #endif
+    /*logfile.print(epochToDate(EDT_epoch));
     logfile.print(",");
     logfile.print(epochToTime(EDT_epoch));
     logfile.print(",");
     logfile.print(count);
     logfile.print('\n');
-
+    */
     logfile.flush();
     digitalWrite(SS_SD_PIN, HIGH); // Close communication SPI bus with SD
-
+    
+    #ifdef DEBUG
     Serial.println("Data written to SD");
+    #endif
 }
 
 // TODO: Finish Epoch Conversion to datestamp
@@ -271,7 +286,9 @@ String epochToTime(uint32_t  timestamp) {
 void ShowSockStatus()
 {
 	for (int i = 0; i < MAX_SOCK_NUM; i++) {
-		Serial.print("Socket#");
+		
+
+    Serial.print("Socket#");
 		Serial.print(i);
 		uint8_t s = W5100.readSnSR(i);
 		Serial.print(":0x");
@@ -288,6 +305,7 @@ void ShowSockStatus()
 		Serial.print("(");
 		Serial.print(W5100.readSnDPORT(i));
 		Serial.println(")");
+
 	}
 }
 
