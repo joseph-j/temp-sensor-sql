@@ -37,7 +37,7 @@
 
 
 // Toggle for debug serial outputs
-#define DEBUG 1
+//#define DEBUG 1
 //#define NETDEBUG
 
 // Sampling Rate Control
@@ -51,7 +51,7 @@ const byte NTP_PACKET_SIZE = 48; // NTP time stamp is in the first 48 bytes of t
 byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packets
 unsigned int EDT_epoch = 0;
 EthernetUDP Udp; // A UDP instance to let us send and receive packets over UDP
-byte count = 0;
+unsigned long count = 0;
 
 // Pin definitions
 const uint8_t SS_SD_PIN = 4;     // Ethernet Sheild default
@@ -65,15 +65,15 @@ const uint8_t SPI_PIN_3 = 53;    // Ethernet Shield default
 // Logging and Ethernet Connectivity Variables
 File logfile;
 EthernetClient client;
-char server[] = "192.168.0.112"; // IP address of the SQL server on RPi
-byte server1[] = { 192, 168, 0, 112 }; // IP address of the SQL server on RPi
-IPAddress server2(192,168,0,112);
+char server[] = "192.168.0.185"; // IP address of the SQL server on RPi
+byte server1[] = { 192, 168, 0, 185 }; // IP address of the SQL server on RPi
+IPAddress server2(192,168,0,185);
 byte mac[] = {0xA8, 0x61, 0x0A, 0xAE, 0x88, 0x6C}; // Provided MAC address of Ethernet Shield
 IPAddress ip1(192,168,0,181); // If UDP failes to assign an IP address to the ethernet shield, instead default to this IP
 
 //SHT Sensor Variables
 SHTSensor sht;
-uint8_t data[2] = {0};
+float data[3] = {0};
 const int POWER_PIN = 13;
 
 // State Variables
@@ -158,11 +158,11 @@ void loop()
   Serial.print("looping...");
   Serial.println(count);
   count++;
-  uint32_t epoch = pullNTP(); // Update epoch timestamp from time.nist.gov
+  //uint32_t epoch = pullNTP(); // Update epoch timestamp from time.nist.gov
   
 
   //DateTime timestamp = new DateTime((uint32_t)epoch);
-  EDT_epoch = pullNTP();
+  //EDT_epoch = pullNTP();
 
   #ifdef DEBUG
     Serial.println("Epoch from NTP: ");
@@ -196,7 +196,7 @@ void pushData(uint32_t  timestamp) {
     client.print("GET /updateDB.php?");
     
     client.print("id=");
-    client.print(EDT_epoch);
+    client.print(count);
     client.print("&");
 
     client.print("Temperature=");
@@ -205,6 +205,10 @@ void pushData(uint32_t  timestamp) {
 
     client.print("Humidity=");
     client.print(data[1]);
+    client.print("&");
+
+    client.print("ExTemp=");
+    client.print(data[2]);
     client.print("&");
 
     client.println(" HTTP/1.1");
