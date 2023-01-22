@@ -55,11 +55,13 @@ unsigned int EDT_epoch = 0;
 EthernetUDP Udp; // A UDP instance to let us send and receive packets over UDP
 unsigned long count = 0;
 
+
 //TC Module
-#define MAXDO   51
-#define MAXCS   53
-#define MAXCLK  52
+#define MAXDO   44  //Purple
+#define MAXCS   45  //Yellow
+#define MAXCLK  46  //Orange
 Adafruit_MAX31855 thermocouple(MAXCLK, MAXCS, MAXDO);
+
 
 // Pin definitions
 const uint8_t SS_SD_PIN = 4;     // Ethernet Sheild default
@@ -186,11 +188,13 @@ void loop()
     Serial.print(" -- ");
     Serial.println(epochToTime(EDT_epoch));
   #endif
+
   sht_read();
   data[2] = thermocouple.readCelsius();
   pushData(EDT_epoch);
   
   Ethernet.maintain(); // Must be periodically called to maintain connction to Apache Server
+  
   //delay(SAMPLE_RATE);
   for(int delayCount = 0; delayCount<600; delayCount++){
     delay(1000);
