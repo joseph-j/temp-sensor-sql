@@ -1,6 +1,8 @@
 
 
 
+
+
 /* Written by Ryan Rivard 4/27/22
     for arduino Mega
 
@@ -31,7 +33,7 @@
 #include <IPAddress.h>
 #include <utility/w5100.h>
 #include <EthernetUdp.h>
-//#include <Adafruit_MAX31856.h>
+#include <Adafruit_MAX31855.h>
 #include <SHTSensor.h>
 #include <arduino-sht.h>
 
@@ -52,6 +54,12 @@ byte packetBuffer[NTP_PACKET_SIZE]; //buffer to hold incoming and outgoing packe
 unsigned int EDT_epoch = 0;
 EthernetUDP Udp; // A UDP instance to let us send and receive packets over UDP
 unsigned long count = 0;
+
+//TC Module
+#define MAXDO   51
+#define MAXCS   53
+#define MAXCLK  52
+Adafruit_MAX31855 thermocouple(MAXCLK, MAXCS, MAXDO);
 
 // Pin definitions
 const uint8_t SS_SD_PIN = 4;     // Ethernet Sheild default
@@ -90,6 +98,13 @@ void setup()
   Serial.println("Serial Init1");
 
   sht_init();
+  delay(300);
+
+  //TC INIT
+  if (!thermocouple.begin()) {
+    Serial.println("TC ERROR.");
+  }
+  Serial.println("TC INIT");
   delay(300);
 
   // SD INIT 
@@ -172,6 +187,7 @@ void loop()
     Serial.println(epochToTime(EDT_epoch));
   #endif
   sht_read();
+  data[2] = thermocouple.readCelsius();
   pushData(EDT_epoch);
   
   Ethernet.maintain(); // Must be periodically called to maintain connction to Apache Server
