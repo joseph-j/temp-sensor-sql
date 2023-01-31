@@ -39,8 +39,8 @@
 
 
 // Toggle for debug serial outputs
-//#define DEBUG 1
-//#define NETDEBUG
+#define DEBUG 1
+#define NETDEBUG
 
 // Sampling Rate Control
 const uint16_t SAMPLE_RATE = 600000; // Will need to be decreased to achieve actual desired delay, does not account for processing time of function
