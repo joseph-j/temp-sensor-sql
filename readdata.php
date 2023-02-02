@@ -33,7 +33,7 @@ echo '<table cellspacing="5" cellpadding="5">
 	<td>ExTemp</td>
       </tr>';
  
-if ($result = $conn->query($sql)) {
+if ($result = $dbh->query($sql)) {
     while ($row = $result->fetch_assoc()) {
         $row_reading_time = $row["reading_time"];
         $row_value1 = $row["Temperature"];
@@ -55,7 +55,7 @@ if ($result = $conn->query($sql)) {
     $result->free();
 }
 
-$conn->close();
+$dbh->close();
 ?>
 </body>
 </html>
